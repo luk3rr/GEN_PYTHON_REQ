@@ -1,0 +1,15 @@
+* GEN_PYTHON_REQ
+This repository contains a script capable of generating the 'requirements.txt' file based solely on the imports made in the .py files.
+
+** Execution
+This script can be run as follows:
+#+begin_src sh
+$ python3 gen_req.py /path/to/your/project
+# OR
+$ python3 gen_req.py /path/to/your/project --venv_folder your_venv_folder_name
+#+end_src
+
+Use =python3 gen_req.py -h= to see the help message.
+
+** Note about pipreqs
+Indeed, there are other packages aimed at generating 'requirements.txt' files, such as [[https://github.com/bndr/pipreqs][pipreqs]]. However, for some reason, it did not work correctly for me :')
