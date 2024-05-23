@@ -12,6 +12,11 @@ import re
 import subprocess
 import argparse
 
+# Some packages have different names when installed via pip
+# This dictionary maps the package name used in the import statement to the name used in pip
+PACKAGE_MAPPING = {
+    'pil': 'pillow',
+}
 
 def get_installed_packages(project_path, venv_folder):
     """
@@ -22,11 +27,8 @@ def get_installed_packages(project_path, venv_folder):
         venv = os.path.join(project_path, venv_folder)
 
         if os.path.isdir(venv):  # Check if the virtual environment exists
-            activate_script = os.path.join(venv, "bin", "activate")
-            activate_cmd = f"source {activate_script} && pip list"
-            result = subprocess.run(
-                activate_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-            )
+            pip_executable = os.path.join(venv, "bin", "pip")
+            result = subprocess.run([pip_executable, "list"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
             # Check if the virtual environment was activated successfully
             if result.returncode == 0:
@@ -42,7 +44,7 @@ def get_installed_packages(project_path, venv_folder):
                 return installed_packages
             else:
                 print("Failed to activate the virtual environment.")
-                print(result.stderr.decode("utf-8"))
+                print("ERROR: ", result.stderr.decode("utf-8"))
                 print("Getting global packages instead.")
 
         else:
@@ -85,7 +87,13 @@ def get_imported_packages(path, ignore=[]):
 
                     for imp in imports:
                         imp = imp.split(".")[0].lower()
+                        # Check if the package has a mapping
+                        if imp in PACKAGE_MAPPING:
+                            imp = PACKAGE_MAPPING[imp]
+
                         imported_packages.add(imp)
+
+
     return imported_packages
 
 
